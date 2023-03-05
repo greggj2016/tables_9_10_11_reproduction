@@ -1,5 +1,6 @@
 import numpy as np
 from copy import deepcopy as COPY
+from scipy.stats import norm
 from tqdm import tqdm
 import pdb
 
@@ -13,17 +14,17 @@ def asd_cutoff(X, a):
 
 def mad_cutoff(X, a):
     med = np.median(X)
-    MAD = 1.4826*np.median(np.abs(med - X))
-    inds1 = med - a*MAD
-    inds2 = med + a*MAD
+    MAD = (1/norm.ppf(3/4))*np.median(np.abs(med - X))
+    inds1 = (X >= med - a*MAD)
+    inds2 = (X <= med + a*MAD)
     inds_to_keep = np.logical_and(inds1, inds2)
     return(inds_to_keep)
 
 def iqr_cutoff(X):
     Q1, Q3 = np.percentile(X, [25, 75])
     cIQR = 1.5*(Q3 - Q1)
-    inds1 = Q1 - cIQR
-    inds2 = Q3 + cIQR
+    inds1 = (X >= Q1 - cIQR)
+    inds2 = (X <= Q3 + cIQR)
     inds_to_keep = np.logical_and(inds1, inds2)
     return(inds_to_keep)
 
