@@ -28,22 +28,13 @@ def iqr_cutoff(X):
     inds_to_keep = np.logical_and(inds1, inds2)
     return(inds_to_keep)
 
-def thresh_data(X, a, T):
+def T2_thresh_data(X, T, cutoff):
 
+    all_inds = np.arange(len(X))
     inds = np.arange(len(X))
-    inds_asd = COPY(inds)
-    inds_mad = COPY(inds)
-    inds_iqr = COPY(inds)
-    for i in range(T):
-
-        inds_asd = inds_asd[asd_cutoff(X[inds_asd], a)]
-        inds_mad = inds_mad[mad_cutoff(X[inds_mad], a)]
-        inds_iqr = inds_iqr[iqr_cutoff(X[inds_iqr])]
-
-    outliers_asd = (np.isin(inds, inds_asd) == False)
-    outliers_mad = (np.isin(inds, inds_mad) == False)
-    outliers_iqr = (np.isin(inds, inds_iqr) == False)
-    return([outliers_asd, outliers_mad, outliers_iqr])
+    for i in range(T): inds = inds[cutoff(X[inds])]
+    outlier_inds = (np.isin(all_inds, inds) == False)
+    return(outlier_inds)
 
 def mean_shift_process(X, k, l):
     X_intermediate = COPY(X)

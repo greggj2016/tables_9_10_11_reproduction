@@ -93,8 +93,21 @@ class test_main_library(unittest.TestCase):
         message = "or (more likely) there is a rounding error in test_iqr_cutoff"
         self.assertTrue(is_correct, message)
 
-    def test_thresh_data(self):
-        pass
+    def test_T2_thresh_data(self):
+        tests = []
+        norm_vals = norm.ppf(np.linspace(1E-10, 1 - 1E-10, 10000000))
+        def casd(x): return(main_lib.asd_cutoff(x, 3))
+        
+        theoretical_std = np.array([0.98658, 0.98505, 0.98487, 0.98485])
+        for T in range(4):
+            asd_inds = main_lib.T2_thresh_data(norm_vals, T + 1, casd)
+            std_actual = np.round(np.std(norm_vals[asd_inds == False]), 5)
+            tests.append(std_actual == np.round(theoretical_std[T], 5))
+
+        message = "The thresh data function or the asd cutoff function "
+        message += "may have an error. Alternatively, there may be a "
+        message += "rounding error in the test_T2_thresh_data function." 
+        self.assertTrue(np.all(tests), message)
 
     def test_mean_shift_process(self):
         # notice that X is a length 2 cube centered at the origin
